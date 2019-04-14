@@ -1,4 +1,5 @@
 ﻿using System;
+using RedisDemo.SimpleTest;
 using StackExchange.Redis;
 
 namespace RedisDemo
@@ -7,8 +8,8 @@ namespace RedisDemo
     {
         static void Main(string[] args)
         {
-            var conn = ConnectionMultiplexer.Connect("127.0.0.1:6370");
-            var db = conn.GetDatabase();
+            //var conn = ConnectionMultiplexer.Connect("127.0.0.1:6370");
+            //var db = conn.GetDatabase();
             //db.StringSet("b", "abcdde");
             //db.StringSet("a", "abb");
 
@@ -17,6 +18,8 @@ namespace RedisDemo
             //Console.WriteLine(db.StringGet("a"));
             //Console.WriteLine(db.StringGet("b"));
             //Console.WriteLine(db.KeyDelete("a"));
+
+            new BasicUse().Execute();
 
             Console.WriteLine("\nend");
             Console.ReadKey();
