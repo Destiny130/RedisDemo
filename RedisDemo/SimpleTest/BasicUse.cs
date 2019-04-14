@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
 using StackExchange.Redis;
 using Newtonsoft.Json;
+using RedisDemo.RedisHelp;
+using System.Configuration;
 
 namespace RedisDemo.SimpleTest
 {
@@ -10,20 +13,34 @@ namespace RedisDemo.SimpleTest
         public void Execute()
         {
             Stopwatch watch = new Stopwatch();
+            string config = ConfigurationManager.ConnectionStrings["RedisSingle"].ConnectionString;
+            var conn = RedisConnectionHelp.GetConnectionMultiplexer(config);
+            int count = 50000;
+
             watch.Start();
-            var conn = ConnectionMultiplexer.Connect("127.0.0.1:6300");
-            var db = conn.GetDatabase();
-
-            var ba = db.CreateBatch();
-
-            for (int i = 100001; i < 1000000; ++i)
+            var db0 = conn.GetDatabase();
+            var batch = db0.CreateBatch();
+            for (int i = 0; i < count; ++i)
             {
-                Person person = new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString(), i.ToString());
-                ba.ListRightPushAsync("Person", JsonConvert.SerializeObject(person));
+                batch.ListRightPushAsync("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")));
             }
-            ba.Execute();
+
+            Enumerable.Range(0, count).Select(i => batch.ListRightPushAsync("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone"))));
+
+            //var t = Enumerable.Range(0, 200000).Select(i => batch.ListRightPushAsync("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone"))));
+            batch.Execute();
             watch.Stop();
-            Console.WriteLine($"Spent: {watch.ElapsedMilliseconds:F3} milliseconds");
+            Console.WriteLine($"Batch spent: {watch.ElapsedMilliseconds:F3} milliseconds");
+
+            watch.Restart();
+            var db1 = conn.GetDatabase(1);
+            for (int i = 0; i < count; ++i)
+            {
+                db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")));
+            }
+            //Enumerable.Range(0, 200000).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone"))));
+            watch.Stop();
+            Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
         }
     }
 
