@@ -11,11 +11,11 @@ namespace RedisDemo.SimpleTest
 {
     public class BasicUse
     {
-        private readonly RedisHelper redisConn;
+        private readonly string redisConnStr;
 
-        public BasicUse(RedisHelper _redisConn)
+        public BasicUse(string _redisConnStr)
         {
-            this.redisConn = _redisConn;
+            this.redisConnStr = _redisConnStr;
         }
 
         public void ExecuteBatch()
@@ -24,7 +24,8 @@ namespace RedisDemo.SimpleTest
             int count = 30;
 
             watch.Start();
-            var db0 = redisConn.GetDatabase();
+            var redisConn0 = new RedisHelper(0, redisConnStr);
+            var db0 = redisConn0.GetDatabase();
             var batch = db0.CreateBatch();
 
             //List<Task<long>> batchTaskList = 
@@ -42,7 +43,8 @@ namespace RedisDemo.SimpleTest
             //Console.WriteLine($"{String.Join(", ", batchTaskList.Where(e => e.IsCompleted).Select(e => e.Result))}");
 
             watch.Restart();
-            var db1 = redisConn.GetDatabase(1);
+            var redisConn1 = new RedisHelper(1, redisConnStr);
+            var db1 = redisConn1.GetDatabase();
             Enumerable.Range(0, count).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
             watch.Stop();
             Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
