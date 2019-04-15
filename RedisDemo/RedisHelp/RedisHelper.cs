@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
@@ -23,17 +23,14 @@ namespace RedisDemo.RedisHelp
         public RedisHelper(int dbNum, string readWriteHosts)
         {
             DbNum = dbNum;
-            _conn =
-                string.IsNullOrWhiteSpace(readWriteHosts) ?
-                RedisConnectionHelp.Instance :
-                RedisConnectionHelp.GetConnectionMultiplexer(readWriteHosts);
+            _conn = string.IsNullOrWhiteSpace(readWriteHosts) ? RedisConnectionHelp.Instance : RedisConnectionHelp.GetConnectionMultiplexer(readWriteHosts);
         }
 
         #region 辅助方法
 
         private string AddSysCustomKey(string oldKey)
         {
-            var prefixKey = CustomKey ?? RedisConnectionHelp.SysCustomKey;
+            var prefixKey = CustomKey ?? RedisConnectionHelp.sysCustomKey;
             return prefixKey + oldKey;
         }
 
@@ -936,9 +933,10 @@ namespace RedisDemo.RedisHelp
             return GetDatabase().CreateTransaction();
         }
 
-        public IDatabase GetDatabase()
+        public IDatabase GetDatabase(int _dbNum = -1)
         {
-            return _conn.GetDatabase(DbNum);
+            int curr = _dbNum == -1 ? DbNum : _dbNum;
+            return _conn.GetDatabase(curr);
         }
 
         public IServer GetServer(string hostAndPort)
