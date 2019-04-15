@@ -42,7 +42,7 @@ namespace RedisDemo.RedisHelp
 
         public static ConnectionMultiplexer GetConnectionMultiplexer(string connectionString)
         {
-            if (!connectionCache.ContainsKey(connectionString))
+            if (!connectionCache.ContainsKey(connectionString) || !connectionCache[connectionString].IsConnected)
             {
                 connectionCache[connectionString] = GetManager(connectionString);
             }
