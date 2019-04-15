@@ -1,6 +1,6 @@
-using System;
-using RedisDemo.SimpleTest;
 using RedisDemo.RedisHelp;
+using RedisDemo.SimpleTest;
+using System;
 
 namespace RedisDemo
 {

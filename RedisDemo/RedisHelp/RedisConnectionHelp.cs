@@ -1,17 +1,18 @@
+using StackExchange.Redis;
 using System;
 using System.Collections.Concurrent;
-using StackExchange.Redis;
 
 namespace RedisDemo.RedisHelp
 {
     public static class RedisConnectionHelp
     {
         private static readonly string redisConnectionString = Util.ReadConnectionString("RedisCluster", "127.0.0.1:6370");
-        public static readonly string sysCustomKey = Util.ReadAppSetting("RedisKey", String.Empty);
-
         private static readonly object locker = new object();
         private static ConnectionMultiplexer instance;
         private static readonly ConcurrentDictionary<string, ConnectionMultiplexer> connectionCache = new ConcurrentDictionary<string, ConnectionMultiplexer>();
+        private static readonly string sysCustomKey = Util.ReadAppSetting("RedisKey", String.Empty);
+
+        public static string SysCustomKey => sysCustomKey;
 
         public static ConnectionMultiplexer Instance
         {

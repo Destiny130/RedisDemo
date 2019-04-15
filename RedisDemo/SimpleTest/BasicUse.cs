@@ -1,11 +1,9 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Diagnostics;
 using Newtonsoft.Json;
 using RedisDemo.RedisHelp;
-using System.Threading.Tasks;
+using StackExchange.Redis;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace RedisDemo.SimpleTest
 {
@@ -13,10 +11,7 @@ namespace RedisDemo.SimpleTest
     {
         private readonly string redisConnStr;
 
-        public BasicUse(string _redisConnStr)
-        {
-            this.redisConnStr = _redisConnStr;
-        }
+        public BasicUse(string _redisConnStr) => redisConnStr = _redisConnStr;
 
         public void ExecuteBatch()
         {
@@ -24,8 +19,8 @@ namespace RedisDemo.SimpleTest
             int count = 30;
 
             watch.Start();
-            var redisConn0 = new RedisHelper(0, redisConnStr);
-            var db0 = redisConn0.GetDatabase();
+            RedisHelper redisConn0 = new RedisHelper(0, redisConnStr);
+            IDatabase db0 = redisConn0.GetDatabase();
             var batch = db0.CreateBatch();
 
             //List<Task<long>> batchTaskList = 
@@ -43,8 +38,8 @@ namespace RedisDemo.SimpleTest
             //Console.WriteLine($"{String.Join(", ", batchTaskList.Where(e => e.IsCompleted).Select(e => e.Result))}");
 
             watch.Restart();
-            var redisConn1 = new RedisHelper(1, redisConnStr);
-            var db1 = redisConn1.GetDatabase();
+            RedisHelper redisConn1 = new RedisHelper(1, redisConnStr);
+            IDatabase db1 = redisConn1.GetDatabase();
             Enumerable.Range(0, count).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
             watch.Stop();
             Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
@@ -66,11 +61,11 @@ namespace RedisDemo.SimpleTest
 
         public Person(int id, string firstName, string lastName, string address, string phone)
         {
-            this.Id = id;
-            this.FirstName = firstName;
-            this.LastName = lastName;
-            this.Address = address;
-            this.Phone = phone;
+            Id = id;
+            FirstName = firstName;
+            LastName = lastName;
+            Address = address;
+            Phone = phone;
         }
     }
 }

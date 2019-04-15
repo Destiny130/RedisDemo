@@ -30,7 +30,7 @@ namespace RedisDemo.RedisHelp
 
         private string AddSysCustomKey(string oldKey)
         {
-            var prefixKey = CustomKey ?? RedisConnectionHelp.sysCustomKey;
+            var prefixKey = CustomKey ?? RedisConnectionHelp.SysCustomKey;
             return prefixKey + oldKey;
         }
 
