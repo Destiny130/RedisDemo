@@ -82,6 +82,7 @@
     <Compile Include="RedisHelp\RedisConnectionHelp.cs" />
     <Compile Include="RedisHelp\RedisHelper.cs" />
     <Compile Include="SimpleTest\BasicUse.cs" />
+    <Compile Include="Util.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">
