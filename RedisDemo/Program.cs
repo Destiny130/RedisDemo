@@ -10,9 +10,8 @@ namespace RedisDemo
         {
             string singleConnStr = Util.ReadConnectionString("RedisSingle", "127.0.0.1:6300");
             RedisHelper clusterRedis = new RedisHelper();
-            RedisHelper singleRedis = new RedisHelper(0, singleConnStr);
 
-            BasicUse basic = new BasicUse(singleRedis);
+            BasicUse basic = new BasicUse(singleConnStr);
             basic.ExecuteBatch();
 
             Console.WriteLine("\nend");
