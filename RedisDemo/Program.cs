@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 using RedisDemo.SimpleTest;
-using StackExchange.Redis;
+using RedisDemo.RedisHelp;
 
 namespace RedisDemo
 {
@@ -8,18 +8,12 @@ namespace RedisDemo
     {
         static void Main(string[] args)
         {
-            //var conn = ConnectionMultiplexer.Connect("127.0.0.1:6370");
-            //var db = conn.GetDatabase();
-            //db.StringSet("b", "abcdde");
-            //db.StringSet("a", "abb");
+            string singleConnStr = Util.ReadConnectionString("RedisSingle", "127.0.0.1:6300");
+            RedisHelper clusterRedis = new RedisHelper();
+            RedisHelper singleRedis = new RedisHelper(0, singleConnStr);
 
-            //var conn = ConnectionMultiplexer.Connect("127.0.0.1:6391");
-            //var db = conn.GetDatabase();
-            //Console.WriteLine(db.StringGet("a"));
-            //Console.WriteLine(db.StringGet("b"));
-            //Console.WriteLine(db.KeyDelete("a"));
-
-            new BasicUse().Execute();
+            BasicUse basic = new BasicUse(singleRedis);
+            basic.ExecuteBatch();
 
             Console.WriteLine("\nend");
             Console.ReadKey();
