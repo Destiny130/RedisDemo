@@ -933,10 +933,9 @@ namespace RedisDemo.RedisHelp
             return GetDatabase().CreateTransaction();
         }
 
-        public IDatabase GetDatabase(int _dbNum = -1)
+        public IDatabase GetDatabase()
         {
-            int curr = _dbNum == -1 ? DbNum : _dbNum;
-            return _conn.GetDatabase(curr);
+            return _conn.GetDatabase(DbNum);
         }
 
         public IServer GetServer(string hostAndPort)
