@@ -52,8 +52,7 @@ namespace RedisDemo.RedisHelp
 
         private static ConnectionMultiplexer GetManager(string connectionString = null)
         {
-            connectionString = connectionString ?? redisConnectionString;
-            var connect = ConnectionMultiplexer.Connect(connectionString);
+            var connect = ConnectionMultiplexer.Connect(connectionString ?? redisConnectionString);
 
             connect.ConfigurationChanged += MuxerConfigurationChanged;
             connect.ConnectionFailed += MuxerConnectionFailed;

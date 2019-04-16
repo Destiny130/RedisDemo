@@ -12,7 +12,8 @@ namespace RedisDemo
             RedisHelper clusterRedis = new RedisHelper();
 
             BasicUse basic = new BasicUse(singleConnStr);
-            basic.ExecuteBatch();
+            basic.ExecuteBatchTest();
+            basic.ExecutePrefixTest();
 
             Console.WriteLine("\nend");
             Console.ReadKey();

@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using RedisDemo.RedisHelp;
 using StackExchange.Redis;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
@@ -16,7 +17,7 @@ namespace RedisDemo.SimpleTest
             redisConnStr = _redisConnStr;
         }
 
-        public void ExecuteBatch()
+        public void ExecuteBatchTest()
         {
             Stopwatch watch = new Stopwatch();
             int count = 30;
@@ -49,28 +50,37 @@ namespace RedisDemo.SimpleTest
             watch.Stop();
             Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
         }
-    }
 
-    class Person
-    {
-        public int Id;
-        public string FirstName;
-        public string LastName;
-        public string Address;
-        public string Phone;
-
-        public Person()
+        public void ExecutePrefixTest()
         {
+            RedisHelper redis = new RedisHelper();  //Will connect to the cluster
 
-        }
+            List<string> keyList = new List<string>() { "a", "b", "c", "d" };
+            List<bool> resultList = new List<bool>();
 
-        public Person(int id, string firstName, string lastName, string address, string phone)
-        {
-            Id = id;
-            FirstName = firstName;
-            LastName = lastName;
-            Address = address;
-            Phone = phone;
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            Console.WriteLine(String.Join(", ", resultList));
+            resultList.Clear();
+
+            redis.CustomKey = "{a}";
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            Console.WriteLine(String.Join(", ", resultList));
+            resultList.Clear();
+
+            redis.CustomKey = "{{a}b}";
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            Console.WriteLine(String.Join(", ", resultList));
+            resultList.Clear();
+
+            redis.CustomKey = "{a}{b}";
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            Console.WriteLine(String.Join(", ", resultList));
+            resultList.Clear();
+
+            redis.CustomKey = "{{a}{b}}";
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            Console.WriteLine(String.Join(", ", resultList));
+            resultList.Clear();
         }
     }
 }
