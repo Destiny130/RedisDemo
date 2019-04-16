@@ -57,28 +57,29 @@ namespace RedisDemo.SimpleTest
 
             List<string> keyList = new List<string>() { "a", "b", "c", "d" };
             List<bool> resultList = new List<bool>();
+            Func<string, string> func = str => str + str + str;
 
-            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(String.Join(", ", resultList));
             resultList.Clear();
 
             redis.CustomKey = "{a}";
-            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(String.Join(", ", resultList));
             resultList.Clear();
 
             redis.CustomKey = "{{a}b}";
-            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(String.Join(", ", resultList));
             resultList.Clear();
 
             redis.CustomKey = "{a}{b}";
-            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(String.Join(", ", resultList));
             resultList.Clear();
 
             redis.CustomKey = "{{a}{b}}";
-            keyList.ForEach(key => resultList.Add(redis.StringSet(key, key + key + key)));
+            keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(String.Join(", ", resultList));
             resultList.Clear();
         }
