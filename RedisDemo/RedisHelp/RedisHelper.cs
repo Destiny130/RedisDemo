@@ -9,9 +9,9 @@ namespace RedisDemo.RedisHelp
 {
     public class RedisHelper
     {
-        private int DbNum { get; }
         private readonly ConnectionMultiplexer _conn;
         public string CustomKey;
+        private int DbNum { get; }
 
         #region Construct functions
 
@@ -315,10 +315,10 @@ namespace RedisDemo.RedisHelp
         /// </summary>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        public void ListRightPush<T>(string key, T value)
+        public long ListRightPush<T>(string key, T value)
         {
             key = AddSysCustomKey(key);
-            Do(db => db.ListRightPush(key, ConvertJson(value)));
+            return Do(db => db.ListRightPush(key, ConvertJson(value)));
         }
 
         /// <summary>
