@@ -11,7 +11,10 @@ namespace RedisDemo.SimpleTest
     {
         private readonly string redisConnStr;
 
-        public BasicUse(string _redisConnStr) => redisConnStr = _redisConnStr;
+        public BasicUse(string _redisConnStr)
+        {
+            redisConnStr = _redisConnStr;
+        }
 
         public void ExecuteBatch()
         {
@@ -39,8 +42,10 @@ namespace RedisDemo.SimpleTest
 
             watch.Restart();
             RedisHelper redisConn1 = new RedisHelper(1, redisConnStr);
-            IDatabase db1 = redisConn1.GetDatabase();
-            Enumerable.Range(0, count).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
+            Enumerable.Range(0, count).Select(i => redisConn1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
+
+            //IDatabase db1 = redisConn1.GetDatabase();
+            //Enumerable.Range(0, count).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
             watch.Stop();
             Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
         }
