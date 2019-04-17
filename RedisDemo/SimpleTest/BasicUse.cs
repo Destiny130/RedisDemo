@@ -49,6 +49,7 @@ namespace RedisDemo.SimpleTest
             //Enumerable.Range(0, count).Select(i => db1.ListRightPush("Person", JsonConvert.SerializeObject(new Person(i, i.ToString() + " first", i.ToString() + " last", i.ToString() + " address", i.ToString() + " phone")))).Count();
             watch.Stop();
             Console.WriteLine($"Normal spent: {watch.ElapsedMilliseconds:F3} milliseconds");
+            Console.WriteLine();
         }
 
         public void ExecutePrefixTest()
@@ -83,16 +84,18 @@ namespace RedisDemo.SimpleTest
             redis.CustomKey = "{{a}{b}}";
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
             Console.WriteLine(printFunc(resultList));
+            Console.WriteLine();
         }
 
         public void TransactionExecuteTest()
         {
             RedisHelper redis = new RedisHelper(0, redisConnStr);
             ITransaction tran = redis.CreateTransaction();
-            tran.StringSetAsync("tran", "a");
-            Console.WriteLine($"Try to get tran: {redis.StringGet("tran")}");
+            tran.StringSetAsync("trans", "a");
+            Console.WriteLine($"Try to get trans: {redis.StringGet("trans")}");
             Console.WriteLine($"Transaction: {tran.Execute()}");
-            Console.WriteLine($"Try to get tran: {redis.StringGet("tran")}");
+            Console.WriteLine($"Try to get trans: {redis.StringGet("trans")}");
+            Console.WriteLine();
         }
     }
 }
