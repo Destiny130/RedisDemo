@@ -12,8 +12,9 @@ namespace RedisDemo
             RedisHelper clusterRedis = new RedisHelper();
 
             BasicUse basic = new BasicUse(singleConnStr);
-            basic.ExecuteBatchTest();
-            basic.ExecutePrefixTest();
+            basic.ExecuteBatchTest();  //Will connect to the single redis
+            basic.ExecutePrefixTest();  //Will connect to the cluster
+            basic.TransactionExecuteTest();  //Will connect to the single redis
 
             Console.WriteLine("\nend");
             Console.ReadKey();
