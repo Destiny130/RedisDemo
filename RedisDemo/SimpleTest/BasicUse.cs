@@ -58,30 +58,41 @@ namespace RedisDemo.SimpleTest
             List<string> keyList = new List<string>() { "a", "b", "c", "d" };
             List<bool> resultList = new List<bool>();
             Func<string, string> func = str => str + str + str;
+            Func<List<bool>, string> printFunc = list =>
+            {
+                string result = String.Join(", ", list);
+                list.Clear();
+                return result;
+            };
 
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
-            Console.WriteLine(String.Join(", ", resultList));
-            resultList.Clear();
+            Console.WriteLine(printFunc(resultList));
 
             redis.CustomKey = "{a}";
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
-            Console.WriteLine(String.Join(", ", resultList));
-            resultList.Clear();
+            Console.WriteLine(printFunc(resultList));
 
             redis.CustomKey = "{{a}b}";
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
-            Console.WriteLine(String.Join(", ", resultList));
-            resultList.Clear();
+            Console.WriteLine(printFunc(resultList));
 
             redis.CustomKey = "{a}{b}";
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
-            Console.WriteLine(String.Join(", ", resultList));
-            resultList.Clear();
+            Console.WriteLine(printFunc(resultList));
 
             redis.CustomKey = "{{a}{b}}";
             keyList.ForEach(key => resultList.Add(redis.StringSet(key, func(key))));
-            Console.WriteLine(String.Join(", ", resultList));
-            resultList.Clear();
+            Console.WriteLine(printFunc(resultList));
+        }
+
+        public void TransactionExecuteTest()
+        {
+            RedisHelper redis = new RedisHelper(0, redisConnStr);
+            ITransaction tran = redis.CreateTransaction();
+            tran.StringSetAsync("tran", "a");
+            Console.WriteLine($"Try to get tran: {redis.StringGet("tran")}");
+            Console.WriteLine($"Transaction: {tran.Execute()}");
+            Console.WriteLine($"Try to get tran: {redis.StringGet("tran")}");
         }
     }
 }
