@@ -87,48 +87,11 @@ namespace RedisDemo.SimpleTest
             #region C: invoke
 
             ////Sync invoke
-            Action<RedisChannel, RedisValue> handlerC1 = (channel, message) =>
-            {
-                string output = subscribePrint(channel, message, "C1");
-                if (subscribeArea.InvokeRequired)
-                {
-                    while (!subscribeArea.IsHandleCreated)
-                    {
-                        if (subscribeArea.Disposing || subscribeArea.IsDisposed)
-                            return;
-                    }
-                    Action<string> action = text => subscribeArea.AppendText(text);
-                    Invoke(action, new object[] { output });  //Will cause preformance problem
-                }
-                else
-                {
-                    subscribeArea.AppendText(output);
-                }
-            };
+            Action<RedisChannel, RedisValue> handlerC1 = (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C1"), appendTextAction, false);
             await redis.SubscribeAsync(dummyChannel, handlerC1);
 
             ////Async invoke
-            Action<RedisChannel, RedisValue> handlerC2 = (channel, message) =>
-            {
-                string output = subscribePrint(channel, message, "C2");
-                if (subscribeArea.InvokeRequired)
-                {
-                    while (!subscribeArea.IsHandleCreated)
-                    {
-                        if (subscribeArea.Disposing || subscribeArea.IsDisposed)
-                        {
-                            return;
-                        }
-                    }
-                    Action<string> action = text => subscribeArea.AppendText(text);
-                    IAsyncResult result = subscribeArea.BeginInvoke(action, new object[] { output });
-                    subscribeArea.EndInvoke(result);
-                }
-                else
-                {
-                    subscribeArea.AppendText(output);
-                }
-            };
+            Action<RedisChannel, RedisValue> handlerC2 = (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C2"), appendTextAction, true);
             await redis.SubscribeAsync(dummyChannel, handlerC2);
 
             #endregion C: invoke
@@ -179,6 +142,35 @@ namespace RedisDemo.SimpleTest
         #region Delegates
 
         readonly Func<RedisChannel, RedisValue, string, string> subscribePrint = (channel, message, methodEntry) => $"{channel.ToString()} channel receive message: {message.ToString()}, dt: {DateTime.Now:HH:mm:ss.fff} {methodEntry}\n";
+
+        readonly Action<TextBoxBase, string> appendTextAction = (textBoxBase, text) => textBoxBase.AppendText(text);
+
+        readonly Action<TextBoxBase, string, Action<TextBoxBase, string>, bool> invokeAction = (textBoxBase, text, action, isAsync) =>
+        {
+            if (textBoxBase.InvokeRequired)
+            {
+                while (!textBoxBase.IsHandleCreated)
+                {
+                    if (textBoxBase.Disposing || textBoxBase.IsDisposed)
+                    {
+                        return;
+                    }
+                }
+                if (!isAsync)
+                {
+                    textBoxBase.Invoke(action, textBoxBase, text);
+                }
+                else
+                {
+                    IAsyncResult result = textBoxBase.BeginInvoke(action, textBoxBase, text);
+                    textBoxBase.EndInvoke(result);
+                }
+            }
+            else
+            {
+                textBoxBase.AppendText(text);
+            }
+        };
 
         #endregion Delegates
     }
