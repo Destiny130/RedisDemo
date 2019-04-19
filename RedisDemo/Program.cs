@@ -15,7 +15,7 @@ namespace RedisDemo
             //basic.BatchTest();  //Will connect to the single redis
             //basic.PrefixTest();  //Will connect to the cluster
             //basic.TransactionTest();  //Will connect to the single redis
-            basic.SubscribeTest();
+            basic.SubscribeTest();  //Will connect to the single redis
 
             Console.WriteLine("\nend");
             Console.ReadKey();

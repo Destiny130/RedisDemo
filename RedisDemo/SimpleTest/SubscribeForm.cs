@@ -1,31 +1,27 @@
-using System;
-using System.Drawing;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using RedisDemo.RedisHelp;
 using StackExchange.Redis;
+using System;
+using System.Drawing;
 using System.Threading;
-using System.ComponentModel;
-using System.Collections.Generic;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace RedisDemo.SimpleTest
 {
     public class SubscribeForm : Form
     {
         readonly string dummyChannel = "dummy channel";
-
-        Label publishLabel;
+        readonly Label publishLabel;
         Button publishButton;
         Button cleanButton;
         RichTextBox publishArea;
-
-        Label subscribeLabel;
+        readonly Label subscribeLabel;
         Button subscribeButton;
         Button unsubscribeButton;
         RichTextBox subscribeArea;
 
         RedisHelper redis;
-        SynchronizationContext context;  //B: commit a request
+        readonly SynchronizationContext context;  //B: commit a request
         //BackgroundWorker worker = null;  //D: BackgroundWorker
 
         public SubscribeForm(RedisHelper _redis)
@@ -91,25 +87,25 @@ namespace RedisDemo.SimpleTest
             #region C: invoke
 
             ////Sync invoke
-            //Action<RedisChannel, RedisValue> handlerC1 = (channel, message) =>
-            //{
-            //    string output = subscribePrint(channel, message, "C1");
-            //    if (subscribeArea.InvokeRequired)
-            //    {
-            //        while (!subscribeArea.IsHandleCreated)
-            //        {
-            //            if (subscribeArea.Disposing || subscribeArea.IsDisposed)
-            //                return;
-            //        }
-            //        Action<string> action = text => subscribeArea.AppendText(text);
-            //        Invoke(action, new object[] { output });  //Will cause preformance problem
-            //    }
-            //    else
-            //    {
-            //        subscribeArea.AppendText(output);
-            //    }
-            //};
-            //await redis.SubscribeAsync(dummyChannel, handlerC1);
+            Action<RedisChannel, RedisValue> handlerC1 = (channel, message) =>
+            {
+                string output = subscribePrint(channel, message, "C1");
+                if (subscribeArea.InvokeRequired)
+                {
+                    while (!subscribeArea.IsHandleCreated)
+                    {
+                        if (subscribeArea.Disposing || subscribeArea.IsDisposed)
+                            return;
+                    }
+                    Action<string> action = text => subscribeArea.AppendText(text);
+                    Invoke(action, new object[] { output });  //Will cause preformance problem
+                }
+                else
+                {
+                    subscribeArea.AppendText(output);
+                }
+            };
+            await redis.SubscribeAsync(dummyChannel, handlerC1);
 
             ////Async invoke
             Action<RedisChannel, RedisValue> handlerC2 = (channel, message) =>
@@ -120,7 +116,9 @@ namespace RedisDemo.SimpleTest
                     while (!subscribeArea.IsHandleCreated)
                     {
                         if (subscribeArea.Disposing || subscribeArea.IsDisposed)
+                        {
                             return;
+                        }
                     }
                     Action<string> action = text => subscribeArea.AppendText(text);
                     IAsyncResult result = subscribeArea.BeginInvoke(action, new object[] { output });
@@ -131,7 +129,7 @@ namespace RedisDemo.SimpleTest
                     subscribeArea.AppendText(output);
                 }
             };
-            //await redis.SubscribeAsync(dummyChannel, handlerC2);
+            await redis.SubscribeAsync(dummyChannel, handlerC2);
 
             #endregion C: invoke
 
@@ -147,14 +145,13 @@ namespace RedisDemo.SimpleTest
 
             #region E: multiply threads 
 
-            List<Task> taskList = new List<Task>();
-            Parallel.For(0, 10, i =>
-            {
-                //taskList.Add(redis.SubscribeAsync(dummyChannel, handlerC2));
-                //taskList.Add(new Task(() => redis.Subscribe(dummyChannel, handlerC2)));
-                taskList.Add(Task.Run(() => redis.Subscribe(dummyChannel, handlerC2)));
-            });
-            await Task.WhenAll(taskList);
+            //List<Task> taskList = Enumerable.Range(0, 10).Select(i => Task.Run(() => redis.Subscribe(dummyChannel, handlerC2))).ToList();
+            //await Task.WhenAll(taskList);
+
+            //Parallel.For(0, 10, i =>
+            //{
+            //    redis.Subscribe(dummyChannel, handlerC2);
+            //});
 
             #endregion
 
@@ -171,7 +168,7 @@ namespace RedisDemo.SimpleTest
 
         async void PublishAsync(object sender, EventArgs e)
         {
-            Task<long> clientCount = redis.PublishAsync(dummyChannel, "This message comes from universe");
+            Task<long> clientCount = redis.PublishAsync(dummyChannel, $"This message comes from universe");
             await clientCount;
             //publishArea.AppendText($"{clientCount.Result.ToString()} client(s) receive message, dt: {DateTime.Now:T}\n");  //Equals to HH:mm:ss
             publishArea.AppendText($"{clientCount.Result.ToString()} client(s) receive message, dt: {DateTime.Now:HH:mm:ss.fff}\n");
@@ -181,7 +178,7 @@ namespace RedisDemo.SimpleTest
 
         #region Delegates
 
-        Func<RedisChannel, RedisValue, string, string> subscribePrint = (channel, message, methodEntry) => $"{channel.ToString()} channel receive message: {message.ToString()}, dt: {DateTime.Now:HH:mm:ss.fff} {methodEntry}\n";
+        readonly Func<RedisChannel, RedisValue, string, string> subscribePrint = (channel, message, methodEntry) => $"{channel.ToString()} channel receive message: {message.ToString()}, dt: {DateTime.Now:HH:mm:ss.fff} {methodEntry}\n";
 
         #endregion Delegates
     }
