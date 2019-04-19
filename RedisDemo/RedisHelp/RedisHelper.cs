@@ -3,6 +3,7 @@ using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace RedisDemo.RedisHelp
@@ -540,10 +541,10 @@ namespace RedisDemo.RedisHelp
             });
         }
 
-        public long Publish<T>(string channel, T msg)
+        public long Publish<T>(string channel, T message)
         {
             ISubscriber sub = _conn.GetSubscriber();
-            return sub.Publish(channel, ConvertJson(msg));
+            return sub.Publish(channel, ConvertJson(message));
         }
 
         public void Unsubscribe(string channel)
@@ -578,6 +579,24 @@ namespace RedisDemo.RedisHelp
             });
         }
 
+        public async Task<long> PublishAsync<T>(string channel, T message)
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            return await sub.PublishAsync(channel, ConvertJson(message));
+        }
+
+        public async Task UnsubscribeAsync(string channel)
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            await sub.UnsubscribeAsync(channel);
+        }
+
+        public async Task UnsubscribeAllAsync()
+        {
+            ISubscriber sub = _conn.GetSubscriber();
+            await sub.UnsubscribeAllAsync();
+        }
+
         #endregion Async methods
 
         #endregion Subscribe
@@ -602,6 +621,11 @@ namespace RedisDemo.RedisHelp
         public void SetSysCustomKey(string customKey)
         {
             CustomKey = customKey;
+        }
+
+        public int GetHashSlot(string key)
+        {
+            return _conn.GetHashSlot(key);
         }
 
         #endregion Other
