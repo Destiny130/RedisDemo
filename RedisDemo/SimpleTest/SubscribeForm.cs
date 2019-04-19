@@ -86,13 +86,14 @@ namespace RedisDemo.SimpleTest
 
             #region C: invoke
 
-            ////Sync invoke
+            //Sync invoke
             Action<RedisChannel, RedisValue> handlerC1 = (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C1"), appendTextAction, false);
             await redis.SubscribeAsync(dummyChannel, handlerC1);
 
-            ////Async invoke
+            //Async invoke
             Action<RedisChannel, RedisValue> handlerC2 = (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C2"), appendTextAction, true);
             await redis.SubscribeAsync(dummyChannel, handlerC2);
+            await redis.SubscribeAsync(dummyChannel, (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C2"), appendTextAction, true));
 
             #endregion C: invoke
 
@@ -108,7 +109,7 @@ namespace RedisDemo.SimpleTest
 
             #region E: multiply threads 
 
-            //List<Task> taskList = Enumerable.Range(0, 10).Select(i => Task.Run(() => redis.Subscribe(dummyChannel, handlerC2))).ToList();
+            //IEnumerable<Task> taskList = Enumerable.Range(0, 10).Select(i => Task.Run(() => redis.Subscribe(dummyChannel, handlerC2)));
             //await Task.WhenAll(taskList);
 
             //Parallel.For(0, 10, i =>
@@ -156,14 +157,14 @@ namespace RedisDemo.SimpleTest
                         return;
                     }
                 }
-                if (!isAsync)
-                {
-                    textBoxBase.Invoke(action, textBoxBase, text);
-                }
-                else
+                if (isAsync)
                 {
                     IAsyncResult result = textBoxBase.BeginInvoke(action, textBoxBase, text);
                     textBoxBase.EndInvoke(result);
+                }
+                else
+                {
+                    textBoxBase.Invoke(action, textBoxBase, text);
                 }
             }
             else
