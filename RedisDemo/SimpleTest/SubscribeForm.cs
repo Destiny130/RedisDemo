@@ -102,7 +102,7 @@ namespace RedisDemo.SimpleTest
             //                return;
             //        }
             //        Action<string> action = text => subscribeArea.AppendText(text);
-            //        Invoke(action, new object[] { output });  //Will cause performance problem
+            //        Invoke(action, new object[] { output });  //Will cause preformance problem
             //    }
             //    else
             //    {
