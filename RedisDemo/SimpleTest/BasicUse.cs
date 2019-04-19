@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace RedisDemo.SimpleTest
 {
@@ -17,7 +18,7 @@ namespace RedisDemo.SimpleTest
             redisConnStr = _redisConnStr;
         }
 
-        public void ExecuteBatchTest()
+        public void BatchTest()
         {
             Stopwatch watch = new Stopwatch();
             int count = 30;
@@ -52,7 +53,7 @@ namespace RedisDemo.SimpleTest
             Console.WriteLine();
         }
 
-        public void ExecutePrefixTest()
+        public void PrefixTest()
         {
             RedisHelper redis = new RedisHelper();  //Will connect to the cluster
 
@@ -87,7 +88,7 @@ namespace RedisDemo.SimpleTest
             Console.WriteLine();
         }
 
-        public void TransactionExecuteTest()
+        public void TransactionTest()
         {
             RedisHelper redis = new RedisHelper(0, redisConnStr);
             ITransaction tran = redis.CreateTransaction();
@@ -96,6 +97,12 @@ namespace RedisDemo.SimpleTest
             Console.WriteLine($"Transaction: {tran.Execute()}");
             Console.WriteLine($"Try to get trans: {redis.StringGet("trans")}");
             Console.WriteLine();
+        }
+
+        public void SubscribeTest()
+        {
+            RedisHelper redis = new RedisHelper(0, redisConnStr);
+            Application.Run(new SubscribeForm(redis));
         }
     }
 }
