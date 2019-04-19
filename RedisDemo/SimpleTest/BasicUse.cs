@@ -102,7 +102,14 @@ namespace RedisDemo.SimpleTest
         public void SubscribeTest()
         {
             RedisHelper redis = new RedisHelper(0, redisConnStr);
-            Application.Run(new SubscribeForm(redis));
+            //List<Task> list = new List<Task>()
+            //{
+            //    Task.Run(() => Application.Run(new SubscribeForm(redis))),
+            //    Task.Run(() => Application.Run(new SubscribeForm(new RedisHelper(0,redisConnStr))))
+            //};
+            //Task.WhenAll(list);
+            //Console.WriteLine("SubscribeTest end");
+            Application.Run(new SubscribeForm(redis));  //same connection can subscribe one channel once only
         }
     }
 }
