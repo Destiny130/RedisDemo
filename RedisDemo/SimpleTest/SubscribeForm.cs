@@ -1,6 +1,7 @@
 using RedisDemo.RedisHelp;
 using StackExchange.Redis;
 using System;
+using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,9 +61,21 @@ namespace RedisDemo.SimpleTest
             //D: BackgroundWorker
             //worker = new BackgroundWorker();
             //worker.WorkerReportsProgress = true;
-            //worker.DoWork += (sender, e) => worker.ReportProgress(50, "Worker is running");
+            ////worker.DoWork += (sender, e) => redis.Subscribe(dummyChannel);
+            ////worker.DoWork += (sender, e) => redis.Subscribe(dummyChannel, (channel, message) => subscribeArea.AppendText(subscribePrint(channel, message, "D")));
+            //worker.DoWork += (sender, e) =>
+            //{
+            //    //worker.ReportProgress(10, "a");
+            //    //Action<int, string> test = worker.ReportProgress;
+            //    //redis.Subscribe(dummyChannel, test);
+            //    redis.Subscribe(dummyChannel, worker);
+            //};
             //worker.ProgressChanged += (sender, e) => subscribeArea.AppendText(e.UserState.ToString());
-            //worker.RunWorkerCompleted += (sender, e) => subscribeArea.AppendText($"{e.Result?.ToString()}\n");
+            //worker.RunWorkerCompleted += (sender, e) =>
+            //{
+            //    subscribeArea.AppendText($"end? {e.Result?.ToString()}\n");
+            //    //redis.Unsubscribe(dummyChannel);
+            //};
         }
 
         #region Events
@@ -93,7 +106,6 @@ namespace RedisDemo.SimpleTest
             //Async invoke
             Action<RedisChannel, RedisValue> handlerC2 = (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C2"), appendTextAction, true);
             await redis.SubscribeAsync(dummyChannel, handlerC2);
-            await redis.SubscribeAsync(dummyChannel, (channel, message) => invokeAction(subscribeArea, subscribePrint(channel, message, "C2"), appendTextAction, true));
 
             #endregion C: invoke
 
@@ -104,6 +116,7 @@ namespace RedisDemo.SimpleTest
             //    worker.RunWorkerAsync(subscribePrint(channel, message, "D"));
             //};
             //await redis.SubscribeAsync(dummyChannel, handlerD);
+            //worker.RunWorkerAsync();
 
             #endregion D: BackgroundWroker
 

@@ -2,6 +2,7 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -539,6 +540,26 @@ namespace RedisDemo.RedisHelp
                 }
             });
         }
+
+        //public void Subscribe(string subChannel, Action<int, string> test)
+        //{
+        //    ISubscriber sub = _conn.GetSubscriber();
+        //    sub.Subscribe(subChannel, (channel, message) =>
+        //    {
+        //        test(10, "bbc");
+        //    });
+        //}
+
+        //public void Subscribe(string subChannel, BackgroundWorker worker)
+        //{
+        //    ISubscriber sub = _conn.GetSubscriber();
+        //    sub.Subscribe(subChannel, (channel, message) =>
+        //    {
+        //        worker = new BackgroundWorker();
+        //        worker.WorkerReportsProgress = true;
+        //        worker.ReportProgress(10, "ddq");
+        //    });
+        //}
 
         public long Publish<T>(string channel, T message)
         {
